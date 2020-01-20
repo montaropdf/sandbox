@@ -1,3 +1,7 @@
+;; Test based on the Echo server example of the cl-async package.
+;;
+;; cl-sync repository: https://github.com/orthecreedence/cl-async
+
 (ql:quickload "cl-async")
 (ql:quickload "babel")
 
