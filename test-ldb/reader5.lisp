@@ -23,6 +23,20 @@
 ;;;   displayed. Is it possible to avoid using the global variable,
 ;;;   without adding a parameter to all functions to transmit that
 ;;;   information? (a static variable in the appropriate functions?)
+;;;
+;;;
+;;; Some examples of formatting control from pjb on IRC #clschool channel
+;;; <pjb> montaropdf: you can use V in the arguments of a format
+;;; specifier to get it from a format argument.  [15:46]
+;;; <pjb> specbot clhs ~I
+;;; <pjb> sorry.  [15:47]
+;;; <pjb> Yes, ~I would work only with pretty-printing.
+;;; <pjb> montaropdf: for example: (format t ">~VT~A<" 4 33) #| >
+;;; 33< --> nil |#  [15:48]
+;;; <pjb> montaropdf: note: this works only for arguments, not for
+;;; the @ and : flags.
+;;; <pjb> (format nil "~V,VD" 8 #\@ 42) #| --> "@@@@@@42" |#
+;;; [15:49]
 ;;; -------------------------------------------------------------------------------
 
 (defparameter *depth* 0)
@@ -51,10 +65,13 @@
         (progn
           (heading (format nil "Display ~a" parse-result))
           (indent (format nil "Type of parse-result: ~a" (type-of parse-result)))
+          ;; Display parse-result as a string and in its raw form.
+          (indent (format nil "parse-result: ~a <> ~a" data-as-string parse-result))
           (if (typep parse-result 'cons)
               ;; parse-result is a cons cell, so checking what's in both cells.
               (progn
-                (indent (format nil "CAR: ~a~% CDR: ~a" (car parse-result) (cdr parse-result)))
+                (indent (format nil "CAR: ~a" (car parse-result)))
+                (indent (format nil "CDR: ~a" (cdr parse-result)))
                 ;; Loop over each element of parse-result and display it, one element per line.
                 (indent "Read result, one element/line:")
                 (dolist (elt parse-result)
@@ -64,9 +81,7 @@
                     (display-read-data cas eof-separator))))
               (progn
                 (heading (format nil "Simple data type encountered: ~a" parse-result))
-                (decf *depth*)))
-          ;; Display parse-result as a string and in its raw form.
-          (indent (format t "parse-result: ~a <> ~a" data-as-string parse-result))
+                (unless (eq *depth* 1) (decf *depth*))))
           parse-result))))
 
 (let ((input-string "(123 x mix) (456 y) merde (truth hurts) (bingo (1 3 4 65 23))"))
